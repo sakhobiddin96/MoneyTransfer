@@ -10,38 +10,39 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uz.pdp.task1.entity.Card;
-import uz.pdp.task1.entity.Output;
+import uz.pdp.task1.entity.Input;
 import uz.pdp.task1.repository.CardRepository;
-import uz.pdp.task1.repository.OutputRepository;
+import uz.pdp.task1.repository.InputRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/output")
-public class OutputController {
+@RequestMapping("/api/input")
+public class InputController {
     @Autowired
-    OutputRepository outputRepository;
+    InputRepository inputRepository;
     @Autowired
     CardRepository cardRepository;
     @GetMapping
-    public HttpEntity<?> getOutput(){
-        List<Output> listOfUserOutputs=new ArrayList<>();
+    public HttpEntity<?> getInputs() {
+        List<Input> listOfUserInputs=new ArrayList<>();
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         String username = user.getUsername();
         Optional<Card> byUsername = cardRepository.findByUsername(username);
         if (byUsername.isPresent()){
             Card card = byUsername.get();
-            List<Output> all = outputRepository.findAll();
-            for (Output output : all) {
-                if (output.getFromCard() == card){
-                    listOfUserOutputs.add(output);
+            List<Input> inputList = inputRepository.findAll();
+            for (Input input : inputList) {
+                if (input.getToCard()==card){
+                    listOfUserInputs.add(input);
                 }
             }
-            return ResponseEntity.ok(listOfUserOutputs);
+            return ResponseEntity.ok(listOfUserInputs);
         }
         return ResponseEntity.notFound().build();
     }
+
 }
